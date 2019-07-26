@@ -1,4 +1,4 @@
-\#ifndef NEON_DSLASH_IMPL_H
+#ifndef NEON_DSLASH_IMPL_H
 #define NEON_DSLASH_IMPL_H
 
 #include <arm_neon.h>
