@@ -1,5 +1,9 @@
+#ifndef SHIFT_TABLE_H
+#define SHIFT_TABLE_H
+
 #include "neon_dslash_types.h"
 #include <memory>
+#include "qmp.h"
 
 namespace Chroma
 {
@@ -196,3 +200,5 @@ private:
   
 
 } // namespace Chroma
+
+#endif

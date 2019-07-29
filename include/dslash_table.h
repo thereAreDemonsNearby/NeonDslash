@@ -133,7 +133,7 @@ private:
     QMP_msghandle_t send_all_mh[4];
     QMP_msghandle_t recv_all_mh[4];
 
-    int total_comm;   
+    int total_comm;
 };
 
 

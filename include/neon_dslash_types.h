@@ -1,5 +1,8 @@
 #ifndef NEON_DSLASH_TYPES_H
 #define NEON_DSLASH_TYPES_H
+
+#include <cstddef>
+
 namespace Chroma
 {
 // some primitive types:

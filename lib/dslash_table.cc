@@ -1,8 +1,11 @@
 #include "dslash_table.h"
 
+namespace Chroma
+{
+
 QMP_mem_t* DslashTable::xchi = 0;
 
-DslashTable::~DslashTable() 
+DslashTable::~DslashTable()
 {
     /* Memory/comms handles */
     if (total_comm > 0) {
@@ -183,3 +186,5 @@ DslashTable::DslashTable(int subgrid[])
       
     total_comm = num;
 }
+
+} // namespace Chroma

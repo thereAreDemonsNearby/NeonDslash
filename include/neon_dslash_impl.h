@@ -52,4 +52,4 @@ void recons_minus(int lo, int hi, int id,
 
 } // namespace Chroma
 
-#endif NEON_DSLASH_IMPL_H
+#endif // NEON_DSLASH_IMPL_H
