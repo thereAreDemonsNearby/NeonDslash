@@ -85,9 +85,9 @@ inline void deswizzle(float32x4_t& v1, float32x4_t& v2, float32x4_t& v3)
 inline void change_sign(float32x4_t& v1, float32x4_t& v2, float32x4_t& v3,
                         uint32x4_t signs)
 {
-    v1 = vcvtq_f32_u32(veorq_u32(vcvtq_u32_f32(v1), signs));
-    v2 = vcvtq_f32_u32(veorq_u32(vcvtq_u32_f32(v2), signs));
-    v3 = vcvtq_f32_u32(veorq_u32(vcvtq_u32_f32(v3), signs));
+    v1 = vreinterpretq_f32_u32(veorq_u32(vreinterpretq_u32_f32(v1), signs));
+    v2 = vreinterpretq_f32_u32(veorq_u32(vreinterpretq_u32_f32(v2), signs));
+    v3 = vreinterpretq_f32_u32(veorq_u32(vreinterpretq_u32_f32(v3), signs));
 }
 
 // adj(3x3 color matrix) * halfspinor
