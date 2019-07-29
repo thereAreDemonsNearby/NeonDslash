@@ -229,7 +229,7 @@ void mat_mvv(float32x4_t& hs1, float32x4_t& hs2, float32x4_t& hs3,
 }
 
 // (a0-i*a3, a1-i*a2)
-void decomp_gamma0_minus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma0_minus_impl(Spinor src,
                               float32x4_t& res1, float32x4_t& res2,
                               float32x4_t& res3)
 {
@@ -260,7 +260,7 @@ void decomp_gamma0_minus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0+a3, a1-a2)
-void decomp_gamma1_minus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma1_minus_impl(Spinor src,
                               float32x4_t& res1, float32x4_t& res2,
                               float32x4_t& res3)
 {
@@ -286,7 +286,7 @@ void decomp_gamma1_minus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0-i*a2, a1+i*a3)
-void decomp_gamma2_minus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma2_minus_impl(Spinor src,
                               float32x4_t& res1, float32x4_t& res2,
                               float32x4_t& res3)
 {
@@ -314,7 +314,7 @@ void decomp_gamma2_minus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0-a2, a1-a3)
-void decomp_gamma3_minus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma3_minus_impl(Spinor src,
                               float32x4_t& res1, float32x4_t& res2,
                               float32x4_t& res3)
 {   
@@ -336,7 +336,7 @@ void decomp_gamma3_minus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0+i*a3, a1+i*a2)
-void decomp_gamma0_plus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma0_plus_impl(Spinor src,
                              float32x4_t& res1, float32x4_t& res2,
                              float32x4_t& res3)
 {
@@ -364,7 +364,7 @@ void decomp_gamma0_plus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0-a3, a1+a2)
-void decomp_gamma1_plus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma1_plus_impl(Spinor src, 
                              float32x4_t& res1, float32x4_t& res2,
                              float32x4_t& res3)
 {
@@ -390,7 +390,7 @@ void decomp_gamma1_plus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0+i*a2, a1-i*a3)
-void decomp_gamma2_plus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma2_plus_impl(Spinor src, 
                              float32x4_t& res1, float32x4_t& res2,
                              float32x4_t& res3)
 {
@@ -418,7 +418,7 @@ void decomp_gamma2_plus_impl(Spinor src, HalfSpinor dst,
 }
 
 // (a0+a2, a1+a3)
-void decomp_gamma3_plus_impl(Spinor src, HalfSpinor dst,
+void decomp_gamma3_plus_impl(Spinor src, 
                              float32x4_t& res1, float32x4_t& res2,
                              float32x4_t& res3)
 {
@@ -434,7 +434,7 @@ void decomp_gamma3_plus_impl(Spinor src, HalfSpinor dst,
     swizzle(vec4, vec5, vec6);
 
     res1 = vaddq_f32(vec1, vec4);
-    res1 = vaddq_f32(vec2, vec5);
+    res2 = vaddq_f32(vec2, vec5);
     res3 = vaddq_f32(vec3, vec6);
 }
 
@@ -442,7 +442,7 @@ void decomp_gamma3_plus_impl(Spinor src, HalfSpinor dst,
 inline void decomp_gamma0_minus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma0_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma0_minus_impl(src, vec1, vec2, vec3);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -452,7 +452,7 @@ inline void decomp_gamma0_minus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma1_minus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma1_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma1_minus_impl(src, vec1, vec2, vec3);
     
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -462,7 +462,7 @@ inline void decomp_gamma1_minus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma2_minus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma2_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma2_minus_impl(src, vec1, vec2, vec3);
     
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -472,7 +472,7 @@ inline void decomp_gamma2_minus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma3_minus(Spinor src, HalfSpinor dst)
 {   
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma3_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma3_minus_impl(src, vec1, vec2, vec3);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -483,7 +483,7 @@ inline void decomp_gamma3_minus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma0_plus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma0_plus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma0_plus_impl(src, vec1, vec2, vec3);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -493,7 +493,7 @@ inline void decomp_gamma0_plus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma1_plus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma1_plus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma1_plus_impl(src, vec1, vec2, vec3);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -503,7 +503,7 @@ inline void decomp_gamma1_plus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma2_plus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma2_plus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma2_plus_impl(src, vec1, vec2, vec3);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -513,7 +513,7 @@ inline void decomp_gamma2_plus(Spinor src, HalfSpinor dst)
 inline void decomp_gamma3_plus(Spinor src, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma3_plus_impl(src, dst, vec1, vec2, vec3);    
+    decomp_gamma3_plus_impl(src, vec1, vec2, vec3);    
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
     vst1q_f32((float*)&dst[1][0][0], vec2);
@@ -524,7 +524,7 @@ inline void decomp_gamma3_plus(Spinor src, HalfSpinor dst)
 inline void decomp_hvv_gamma0_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma0_plus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma0_plus_impl(src, vec1, vec2, vec3);
     // now the half spinor is in [vec1 vec2 vec3]
     // begin mat hvv
     mat_hvv(vec1, vec2, vec3, mat);
@@ -537,7 +537,7 @@ inline void decomp_hvv_gamma0_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma1_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma1_plus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma1_plus_impl(src, vec1, vec2, vec3);
     
     mat_hvv(vec1, vec2, vec3, mat);
 
@@ -549,7 +549,7 @@ inline void decomp_hvv_gamma1_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma2_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma2_plus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma2_plus_impl(src, vec1, vec2, vec3);
     mat_hvv(vec1, vec2, vec3, mat);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
@@ -560,7 +560,7 @@ inline void decomp_hvv_gamma2_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma3_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma3_plus_impl(src, dst, vec1, vec2, vec3);    
+    decomp_gamma3_plus_impl(src, vec1, vec2, vec3);    
     mat_hvv(vec1, vec2, vec3, mat);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
@@ -573,7 +573,7 @@ inline void decomp_hvv_gamma3_plus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma0_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma0_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma0_minus_impl(src, vec1, vec2, vec3);
     mat_hvv(vec1, vec2, vec3, mat);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
@@ -584,7 +584,7 @@ inline void decomp_hvv_gamma0_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma1_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma1_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma1_minus_impl(src, vec1, vec2, vec3);
     mat_hvv(vec1, vec2, vec3, mat);
     
     vst1q_f32((float*)&dst[0][0][0], vec1);
@@ -595,7 +595,7 @@ inline void decomp_hvv_gamma1_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma2_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma2_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma2_minus_impl(src, vec1, vec2, vec3);
     mat_hvv(vec1, vec2, vec3, mat);
     
     vst1q_f32((float*)&dst[0][0][0], vec1);
@@ -606,7 +606,7 @@ inline void decomp_hvv_gamma2_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 inline void decomp_hvv_gamma3_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
 {   
     float32x4_t vec1, vec2, vec3;
-    decomp_gamma3_minus_impl(src, dst, vec1, vec2, vec3);
+    decomp_gamma3_minus_impl(src, vec1, vec2, vec3);
     mat_hvv(vec1, vec2, vec3, mat);
 
     vst1q_f32((float*)&dst[0][0][0], vec1);
@@ -614,8 +614,6 @@ inline void decomp_hvv_gamma3_minus(Spinor src, GaugeMat mat, HalfSpinor dst)
     vst1q_f32((float*)&dst[2][0][0], vec3);
 }
 
-// reconstructMinus(u * halfspinor)
-// do the 4 mvv_recons together to avoid extra loads and stores
 void mvv_recons_4dir_minus(HalfSpinor src1, HalfSpinor src2, HalfSpinor src3, HalfSpinor src4,
                            GaugeMat mat1, GaugeMat mat2, GaugeMat mat3, GaugeMat mat4,
                            Spinor dst)
@@ -650,7 +648,7 @@ void mvv_recons_4dir_minus(HalfSpinor src1, HalfSpinor src2, HalfSpinor src3, Ha
         lowerSum[2] = v3;
     }
 
-    // dir1 (a0 a1) -> (a0 a1 -a1 -a0)
+    // dir1 (a0 a1) -> (a0 a1 -a1 a0)
     {
         uint32x4_t signs12 = vld1q_u32(signs12UInt);
         
@@ -739,72 +737,80 @@ void mvv_recons_4dir_plus(HalfSpinor src1, HalfSpinor src2, HalfSpinor src3, Hal
     float32x4_t lowerSum[3];
 
     // dir0 (a0 a1) -> (a0 a1 -i*a1 -i*a0)
-    float32x4_t v1, v2, v3;
-    v1 = vld1q_f32((float*)&src1[0][0][0]);
-    v2 = vld1q_f32((float*)&src1[1][0][0]);
-    v3 = vld1q_f32((float*)&src1[2][0][0]);
-    mat_mvv(v1, v2, v3, mat1);
+    {
+        float32x4_t v1, v2, v3;
+        v1 = vld1q_f32((float*)&src1[0][0][0]);
+        v2 = vld1q_f32((float*)&src1[1][0][0]);
+        v3 = vld1q_f32((float*)&src1[2][0][0]);
+        mat_mvv(v1, v2, v3, mat1);
 
-    upperSum[0] = v1;
-    upperSum[1] = v2;
-    upperSum[2] = v3;
+        upperSum[0] = v1;
+        upperSum[1] = v2;
+        upperSum[2] = v3;
 
-    reverse_elements(v1, v2, v3);
-    change_sign(v1, v2, v3, signs24);
+        reverse_elements(v1, v2, v3);
+        change_sign(v1, v2, v3, signs24);
 
-    lowerSum[0] = v1;
-    lowerSum[1] = v2;
-    lowerSum[2] = v3;
+        lowerSum[0] = v1;
+        lowerSum[1] = v2;
+        lowerSum[2] = v3;
+    }
 
     // dir1 (a0 a1) -> (a0 a1 a1 -a0)
-    v1 = vld1q_f32((float*)&src2[0][0][0]);
-    v2 = vld1q_f32((float*)&src2[1][0][0]);
-    v3 = vld1q_f32((float*)&src2[2][0][0]);
-    mat_mvv(v1, v2, v3, mat2);
+    {
+        auto v1 = vld1q_f32((float*)&src2[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src2[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src2[2][0][0]);
+        mat_mvv(v1, v2, v3, mat2);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    v1 = vextq_f32(v1, v1, 2);
-    v2 = vextq_f32(v2, v2, 2);
-    v3 = vextq_f32(v3, v3, 2);
-    change_sign(v1, v2, v3, signs34);
+        v1 = vextq_f32(v1, v1, 2);
+        v2 = vextq_f32(v2, v2, 2);
+        v3 = vextq_f32(v3, v3, 2);
+        change_sign(v1, v2, v3, signs34);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
-    // dir2 (a0 a1) -> (a0 a1 -i*a0 -i*a1)
-    v1 = vld1q_f32((float*)&src3[0][0][0]);
-    v2 = vld1q_f32((float*)&src3[1][0][0]);
-    v3 = vld1q_f32((float*)&src3[2][0][0]);
-    mat_mvv(v1, v2, v3, mat3);
+    // dir2 (a0 a1) -> (a0 a1 -i*a0 i*a1)
+    {
+        auto v1 = vld1q_f32((float*)&src3[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src3[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src3[2][0][0]);
+        mat_mvv(v1, v2, v3, mat3);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    reverse_real_img(v1, v2, v3);
-    change_sign(v1, v2, v3, signs23);
+        reverse_real_img(v1, v2, v3);
+        change_sign(v1, v2, v3, signs23);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
     // dir3 (a0 a1) -> (a0 a1 a0 a1)
-    v1 = vld1q_f32((float*)&src4[0][0][0]);
-    v2 = vld1q_f32((float*)&src4[1][0][0]);
-    v3 = vld1q_f32((float*)&src4[2][0][0]);
-    mat_mvv(v1, v2, v3, mat4);
+    {
+        auto v1 = vld1q_f32((float*)&src4[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src4[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src4[2][0][0]);
+        mat_mvv(v1, v2, v3, mat4);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
     // done. store
     vst1q_f32((float*)&dst[0][0][0], upperSum[0]);
@@ -839,68 +845,75 @@ void recons_4dir_plus(HalfSpinor src1, HalfSpinor src2,
     lowerSum[2] = vld1q_f32((float*)&dst[3][1][0]);
 
     // dir0 (a0 a1) -> (a0 a1 -i*a1 -i*a0)
-    float32x4_t v1, v2, v3;
-    v1 = vld1q_f32((float*)&src1[0][0][0]);
-    v2 = vld1q_f32((float*)&src1[1][0][0]);
-    v3 = vld1q_f32((float*)&src1[2][0][0]);
+    {
+        auto v1 = vld1q_f32((float*)&src1[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src1[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src1[2][0][0]);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    reverse_elements(v1, v2, v3);
-    change_sign(v1, v2, v3, signs24);
+        reverse_elements(v1, v2, v3);
+        change_sign(v1, v2, v3, signs24);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
     // dir1 (a0 a1) -> (a0 a1 a1 -a0)
-    v1 = vld1q_f32((float*)&src2[0][0][0]);
-    v2 = vld1q_f32((float*)&src2[1][0][0]);
-    v3 = vld1q_f32((float*)&src2[2][0][0]);
+    {
+        auto v1 = vld1q_f32((float*)&src2[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src2[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src2[2][0][0]);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    v1 = vextq_f32(v1, v1, 2);
-    v2 = vextq_f32(v2, v2, 2);
-    v3 = vextq_f32(v3, v3, 2);
-    change_sign(v1, v2, v3, signs34);
+        v1 = vextq_f32(v1, v1, 2);
+        v2 = vextq_f32(v2, v2, 2);
+        v3 = vextq_f32(v3, v3, 2);
+        change_sign(v1, v2, v3, signs34);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
     // dir2 (a0 a1) -> (a0 a1 -i*a0 -i*a1)
-    v1 = vld1q_f32((float*)&src3[0][0][0]);
-    v2 = vld1q_f32((float*)&src3[1][0][0]);
-    v3 = vld1q_f32((float*)&src3[2][0][0]);
+    {
+        auto v1 = vld1q_f32((float*)&src3[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src3[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src3[2][0][0]);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    reverse_real_img(v1, v2, v3);
-    change_sign(v1, v2, v3, signs23);
+        reverse_real_img(v1, v2, v3);
+        change_sign(v1, v2, v3, signs23);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
     // dir3 (a0 a1) -> (a0 a1 a0 a1)
-    v1 = vld1q_f32((float*)&src4[0][0][0]);
-    v2 = vld1q_f32((float*)&src4[1][0][0]);
-    v3 = vld1q_f32((float*)&src4[2][0][0]);
+    {
+        auto v1 = vld1q_f32((float*)&src4[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src4[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src4[2][0][0]);
 
-    upperSum[0] = vaddq_f32(upperSum[0], v1);
-    upperSum[1] = vaddq_f32(upperSum[1], v2);
-    upperSum[2] = vaddq_f32(upperSum[2], v3);
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
 
-    lowerSum[0] = vaddq_f32(lowerSum[0], v1);
-    lowerSum[1] = vaddq_f32(lowerSum[1], v2);
-    lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
 
     // done. deswizzle and store
     deswizzle(upperSum[0], upperSum[1], upperSum[2]);
@@ -1017,7 +1030,6 @@ void recons_4dir_minus(HalfSpinor src1, HalfSpinor src2,
     vst1q_f32((float*)&dst[2][2][0], lowerSum[1]);
     vst1q_f32((float*)&dst[3][1][0], lowerSum[2]);
 }
- 
 
 } // namespace anonymous
 
