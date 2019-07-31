@@ -41,7 +41,7 @@ void NeonDslash::create(int subgrid[], /* int subgrid[4] */
     
     dslashTable.reset(new DslashTable(subgrid));
     shiftTable.reset(new ShiftTable(subgrid,
-                                    dslashTable->getChi1(), 
+                                    dslashTable->getChi1(),
                                     dslashTable->getChi2(), 
                                     (HalfSpinor*(*)[4])(dslashTable->getRecvBufptr()),
                                     (HalfSpinor*(*)[4])(dslashTable->getSendBufptr()),
@@ -66,7 +66,7 @@ void NeonDslash::apply(float* chi, float* psiArg, int isign, int cb) const
     if (isign == 1) {
 
         dslashTable->startReceives();
-
+        
         dispatchToThreads(decomp_plus,
                           psi,
                           chi1,

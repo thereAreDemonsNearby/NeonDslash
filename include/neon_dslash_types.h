@@ -13,7 +13,7 @@ using GaugeMat = float[3][3][2];
 namespace Cache
 {
 constexpr size_t CacheLineSize = 64;
-constexpr size_t CacheSetSize = 16*1024;
+constexpr size_t CacheSetSize = 32*1024;
 }
 } // end namespace Chroma
 

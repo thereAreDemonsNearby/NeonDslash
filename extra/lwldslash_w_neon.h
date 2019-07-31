@@ -45,7 +45,10 @@ public:
 		const multi1d<Real>& coeffs_);
 
     void apply(T& chi, const T& psi, PlusMinus isign, int cb) const {
+        START_CODE();
         impl.apply((float*)chi.getF(), (float*)psi.getF(), isign, cb); // use the OLattice backdoor
+        getFermBC().modifyF(chi, QDP::rb[cb]);
+        END_CODE();
     }
 
     //! Return the fermion BC object for this linear operator

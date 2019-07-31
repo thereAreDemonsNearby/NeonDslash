@@ -15,8 +15,8 @@ void NeonWilsonDslash::packGauge(multi1d<LatticeColorMatrix> const& gauge,
             // packed[i + d] = gauge[d].elem(i);
             for (size_t n = 0; n < 3; ++n) {
                 for (size_t m = 0; m < 3; ++m) {
-                    packed[i+d][n][m][0] = gauge[d].elem(i).elem().elem(m, n).real();
-                    packed[i+d][n][m][1] = gauge[d].elem(i).elem().elem(m, n).imag();
+                    packed[i*4+d][n][m][0] = gauge[d].elem(i).elem().elem(m, n).real();
+                    packed[i*4+d][n][m][1] = gauge[d].elem(i).elem().elem(m, n).imag();
                 }
             }
         }

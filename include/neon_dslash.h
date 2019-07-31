@@ -21,7 +21,7 @@ public:
                 GaugeMat* packedGauge,
                 void (*getSiteCoords)(int coord[], int node, int linear),
                 int (*getLinearSiteIndex)(const int coord[]),
-                int (*nodeNumber)(const int coord[]));
+                int (*getNodeNumber)(const int coord[]));
     
     void apply(float* chi, float* psi, int isign, int cb) const;
 
