@@ -50,6 +50,27 @@ void recons_minus(int lo, int hi, int id,
                   GaugeMat (*gauge)[4], int cb,
                   ShiftTable* sTab);
 
+// fused:
+void decomp_and_decomp_hvv_plus(int lo, int hi, int id,
+                                Spinor* spinorField, HalfSpinor* chi,
+                                GaugeMat (*gaugeField)[4], int cb,
+                                ShiftTable* sTab);
+
+void decomp_and_decomp_hvv_minus(int lo, int hi, int id,
+                                Spinor* spinorField, HalfSpinor* chi,
+                                GaugeMat (*gaugeField)[4], int cb,
+                                ShiftTable* sTab);
+
+void mvv_recons_and_recons_plus(int lo, int hi, int id,
+                                Spinor* spinorField, HalfSpinor* chi,
+                                GaugeMat (*gaugeField)[4], int cb,
+                                ShiftTable* sTab);
+
+void mvv_recons_and_recons_minus(int lo, int hi, int id,
+                                 Spinor* spinorField, HalfSpinor* chi,
+                                 GaugeMat (*gaugeField)[4], int cb,
+                                 ShiftTable* sTab)
+
 } // namespace Chroma
 
 #endif // NEON_DSLASH_IMPL_H

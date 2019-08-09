@@ -1034,6 +1034,378 @@ void recons_4dir_minus(HalfSpinor src1, HalfSpinor src2,
     vst1q_f32((float*)&dst[3][1][0], lowerSum[2]);
 }
 
+// fused
+
+void mvv_recons_4dir_minus_and_recons_4dir_plus(HalfSpinor src1, HalfSpinor src2, HalfSpinor src3, HalfSpinor src4,
+                                                HalfSpinor src5, HalfSpinor src6, HalfSpinor src7, HalfSpinor src8,
+                                                GaugeMat mat1, GaugeMat mat2, GaugeMat mat3, GaugeMat mat4,
+                                                Spinor dst)
+{
+    static uint32_t signs13UInt[4] __attribute__((aligned(16))) = {0x80000000, 0x0, 0x80000000, 0x0};
+    static uint32_t signs12UInt[4] __attribute__((aligned(16))) = {0x80000000, 0x80000000, 0x0, 0x0};
+    static uint32_t signs14UInt[4] __attribute__((aligned(16))) = {0x80000000, 0x0, 0x0, 0x80000000};
+    static uint32_t signs24UInt[4] __attribute__((aligned(16))) = {0, 0x80000000, 0, 0x80000000};
+    static uint32_t signs34UInt[4] __attribute__((aligned(16))) = {0, 0, 0x80000000, 0x80000000};
+    static uint32_t signs23UInt[4] __attribute__((aligned(16))) = {0, 0x80000000, 0x80000000, 0};    
+    
+    float32x4_t upperSum[3];
+    float32x4_t lowerSum[3];
+
+    // dir0 (a0 a1) -> (a0 a1 i*a1 i*a0)
+    {
+        uint32x4_t signs13 = vld1q_u32(signs13UInt);
+        
+        float32x4_t v1 = vld1q_f32((float*)&src1[0][0][0]);
+        float32x4_t v2 = vld1q_f32((float*)&src1[1][0][0]);
+        float32x4_t v3 = vld1q_f32((float*)&src1[2][0][0]);
+
+        mat_mvv(v1, v2, v3, mat1); // result in v1 v2 v3    
+        // save upper half (a0 a1)
+        upperSum[0] = v1;
+        upperSum[1] = v2;
+        upperSum[2] = v3;
+        // do reconstruct
+        reverse_elements(v1, v2, v3);
+        change_sign(v1, v2, v3, signs13);
+        
+        lowerSum[0] = v1;
+        lowerSum[1] = v2;
+        lowerSum[2] = v3;
+    }
+
+    // dir1 (a0 a1) -> (a0 a1 -a1 a0)
+    {
+        uint32x4_t signs12 = vld1q_u32(signs12UInt);
+        
+        float32x4_t v1 = vld1q_f32((float*)&src2[0][0][0]);
+        float32x4_t v2 = vld1q_f32((float*)&src2[1][0][0]);
+        float32x4_t v3 = vld1q_f32((float*)&src2[2][0][0]);
+        
+        mat_mvv(v1, v2, v3, mat2);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+        
+        v1 = vextq_f32(v1, v1, 2);
+        v2 = vextq_f32(v2, v2, 2);
+        v3 = vextq_f32(v3, v3, 2);
+
+        change_sign(v1, v2, v3, signs12);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir2 (a0 a1) -> (a0 a1 i*a0 -i*a1)
+    {
+        uint32x4_t signs14 = vld1q_u32(signs14UInt);
+        float32x4_t v1 = vld1q_f32((float*)&src3[0][0][0]);
+        float32x4_t v2 = vld1q_f32((float*)&src3[1][0][0]);
+        float32x4_t v3 = vld1q_f32((float*)&src3[2][0][0]);
+        
+        mat_mvv(v1, v2, v3, mat3);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        reverse_real_img(v1, v2, v3);
+        change_sign(v1, v2, v3, signs14);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir3 (a0 a1) -> (a0 a1 -a0 -a1)
+    {
+        float32x4_t v1 = vld1q_f32((float*)&src4[0][0][0]);
+        float32x4_t v2 = vld1q_f32((float*)&src4[1][0][0]);
+        float32x4_t v3 = vld1q_f32((float*)&src4[2][0][0]);
+        
+        mat_mvv(v1, v2, v3, mat4);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        lowerSum[0] = vsubq_f32(lowerSum[0], v1);
+        lowerSum[1] = vsubq_f32(lowerSum[1], v2);
+        lowerSum[2] = vsubq_f32(lowerSum[2], v3);
+    }
+
+
+
+    // dir0 (a0 a1) -> (a0 a1 -i*a1 -i*a0)
+    {
+        uint32x4_t signs24 = vld1q_u32(signs24UInt);
+        auto v1 = vld1q_f32((float*)&src5[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src5[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src5[2][0][0]);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        reverse_elements(v1, v2, v3);
+        change_sign(v1, v2, v3, signs24);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir1 (a0 a1) -> (a0 a1 a1 -a0)
+    {
+        uint32x4_t signs34 = vld1q_u32(signs34UInt);
+        auto v1 = vld1q_f32((float*)&src6[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src6[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src6[2][0][0]);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        v1 = vextq_f32(v1, v1, 2);
+        v2 = vextq_f32(v2, v2, 2);
+        v3 = vextq_f32(v3, v3, 2);
+        change_sign(v1, v2, v3, signs34);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir2 (a0 a1) -> (a0 a1 -i*a0 -i*a1)
+    {
+        uint32x4_t signs23 = vld1q_u32(signs23UInt);
+        auto v1 = vld1q_f32((float*)&src7[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src7[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src7[2][0][0]);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        reverse_real_img(v1, v2, v3);
+        change_sign(v1, v2, v3, signs23);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir3 (a0 a1) -> (a0 a1 a0 a1)
+    {
+        auto v1 = vld1q_f32((float*)&src8[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src8[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src8[2][0][0]);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // done. deswizzle and store
+    deswizzle(upperSum[0], upperSum[1], upperSum[2]);
+    deswizzle(lowerSum[0], lowerSum[1], lowerSum[2]);
+    
+    vst1q_f32((float*)&dst[0][0][0], upperSum[0]);
+    vst1q_f32((float*)&dst[0][2][0], upperSum[1]);
+    vst1q_f32((float*)&dst[1][1][0], upperSum[2]);
+    vst1q_f32((float*)&dst[2][0][0], lowerSum[0]);
+    vst1q_f32((float*)&dst[2][2][0], lowerSum[1]);
+    vst1q_f32((float*)&dst[3][1][0], lowerSum[2]);
+}
+
+void mvv_recons_4dir_plus_and_recons_4dir_minus(HalfSpinor src1, HalfSpinor src2, HalfSpinor src3, HalfSpinor src4,
+                                                HalfSpinor src5, HalfSpinor src6, HalfSpinor src7, HalfSpinor src8,
+                                                GaugeMat mat1, GaugeMat mat2, GaugeMat mat3, GaugeMat mat4,
+                                                Spinor dst)
+{
+    static uint32_t signs24UInt[4] __attribute__((aligned(16))) = {0, 0x80000000, 0, 0x80000000};
+    static uint32_t signs34UInt[4] __attribute__((aligned(16))) = {0, 0, 0x80000000, 0x80000000};
+    static uint32_t signs23UInt[4] __attribute__((aligned(16))) = {0, 0x80000000, 0x80000000, 0};
+    static uint32_t signs13UInt[4] __attribute__((aligned(16))) = {0x80000000, 0x0, 0x80000000, 0x0};
+    static uint32_t signs12UInt[4] __attribute__((aligned(16))) = {0x80000000, 0x80000000, 0x0, 0x0};
+    static uint32_t signs14UInt[4] __attribute__((aligned(16))) = {0x80000000, 0x0, 0x0, 0x80000000};
+    
+    float32x4_t upperSum[3];
+    float32x4_t lowerSum[3];
+
+    // dir0 (a0 a1) -> (a0 a1 -i*a1 -i*a0)
+    {
+        uint32x4_t signs24 = vld1q_u32(signs24UInt);
+        float32x4_t v1, v2, v3;
+        v1 = vld1q_f32((float*)&src1[0][0][0]);
+        v2 = vld1q_f32((float*)&src1[1][0][0]);
+        v3 = vld1q_f32((float*)&src1[2][0][0]);
+        mat_mvv(v1, v2, v3, mat1);
+
+        upperSum[0] = v1;
+        upperSum[1] = v2;
+        upperSum[2] = v3;
+
+        reverse_elements(v1, v2, v3);
+        change_sign(v1, v2, v3, signs24);
+
+        lowerSum[0] = v1;
+        lowerSum[1] = v2;
+        lowerSum[2] = v3;
+    }
+
+    // dir1 (a0 a1) -> (a0 a1 a1 -a0)
+    {
+            uint32x4_t signs34 = vld1q_u32(signs34UInt);
+        auto v1 = vld1q_f32((float*)&src2[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src2[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src2[2][0][0]);
+        mat_mvv(v1, v2, v3, mat2);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        v1 = vextq_f32(v1, v1, 2);
+        v2 = vextq_f32(v2, v2, 2);
+        v3 = vextq_f32(v3, v3, 2);
+        change_sign(v1, v2, v3, signs34);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir2 (a0 a1) -> (a0 a1 -i*a0 i*a1)
+    {
+            uint32x4_t signs23 = vld1q_u32(signs23UInt);
+        auto v1 = vld1q_f32((float*)&src3[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src3[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src3[2][0][0]);
+        mat_mvv(v1, v2, v3, mat3);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        reverse_real_img(v1, v2, v3);
+        change_sign(v1, v2, v3, signs23);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir3 (a0 a1) -> (a0 a1 a0 a1)
+    {
+        auto v1 = vld1q_f32((float*)&src4[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src4[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src4[2][0][0]);
+        mat_mvv(v1, v2, v3, mat4);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    
+    // dir0 (a0 a1) -> (a0 a1 i*a1 i*a0)
+    {
+        uint32x4_t signs13 = vld1q_u32(signs13UInt);        
+        float32x4_t v1 = vld1q_f32((float*)&src5[0][0][0]);
+        float32x4_t v2 = vld1q_f32((float*)&src5[1][0][0]);
+        float32x4_t v3 = vld1q_f32((float*)&src5[2][0][0]);
+
+        // save upper half (a0 a1)
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+        // do reconstruct
+        reverse_elements(v1, v2, v3);
+        change_sign(v1, v2, v3, signs13);
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir1 (a0 a1) -> (a0 a1 -a1 -a0)
+    {
+        uint32x4_t signs12 = vld1q_u32(signs12UInt);
+        
+        auto v1 = vld1q_f32((float*)&src6[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src6[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src6[2][0][0]);        
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+        
+        v1 = vextq_f32(v1, v1, 2);
+        v2 = vextq_f32(v2, v2, 2);
+        v3 = vextq_f32(v3, v3, 2);
+
+        change_sign(v1, v2, v3, signs12);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir2 (a0 a1) -> (a0 a1 i*a0 -i*a1)
+    {
+        uint32x4_t signs14 = vld1q_u32(signs14UInt);
+        auto v1 = vld1q_f32((float*)&src7[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src7[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src7[2][0][0]);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        reverse_real_img(v1, v2, v3);
+        change_sign(v1, v2, v3, signs14);
+
+        lowerSum[0] = vaddq_f32(lowerSum[0], v1);
+        lowerSum[1] = vaddq_f32(lowerSum[1], v2);
+        lowerSum[2] = vaddq_f32(lowerSum[2], v3);
+    }
+
+    // dir3 (a0 a1) -> (a0 a1 -a0 -a1)
+    {
+        auto v1 = vld1q_f32((float*)&src8[0][0][0]);
+        auto v2 = vld1q_f32((float*)&src8[1][0][0]);
+        auto v3 = vld1q_f32((float*)&src8[2][0][0]);
+
+        upperSum[0] = vaddq_f32(upperSum[0], v1);
+        upperSum[1] = vaddq_f32(upperSum[1], v2);
+        upperSum[2] = vaddq_f32(upperSum[2], v3);
+
+        lowerSum[0] = vsubq_f32(lowerSum[0], v1);
+        lowerSum[1] = vsubq_f32(lowerSum[1], v2);
+        lowerSum[2] = vsubq_f32(lowerSum[2], v3);
+    }
+
+    deswizzle(upperSum[0], upperSum[1], upperSum[2]);
+    deswizzle(lowerSum[0], lowerSum[1], lowerSum[2]);
+    
+    vst1q_f32((float*)&dst[0][0][0], upperSum[0]);
+    vst1q_f32((float*)&dst[0][2][0], upperSum[1]);
+    vst1q_f32((float*)&dst[1][1][0], upperSum[2]);
+    vst1q_f32((float*)&dst[2][0][0], lowerSum[0]);
+    vst1q_f32((float*)&dst[2][2][0], lowerSum[1]);
+    vst1q_f32((float*)&dst[3][1][0], lowerSum[2]);    
+}
+
 } // namespace anonymous
 
 #endif

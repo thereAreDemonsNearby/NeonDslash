@@ -67,7 +67,7 @@ void NeonDslash::apply(float* chi, float* psiArg, int isign, int cb) const
 
         dslashTable->startReceives();
         
-        dispatchToThreads(decomp_plus,
+        dispatchToThreads(decomp_and_decomp_hvv_plus,
                           psi,
                           chi1,
                           u,
@@ -75,20 +75,24 @@ void NeonDslash::apply(float* chi, float* psiArg, int isign, int cb) const
                           sourceCB,
                           subgrid_vol_cb);
 
-        dslashTable->startSendForward(); 
-        dispatchToThreads(decomp_hvv_plus,
-                          psi,
-                          chi2,
-                          u,
-                          shiftTable.get(),
-                          sourceCB,
-                          subgrid_vol_cb);
-
+        // dispatchToThreads(decomp_hvv_plus,
+        //                   psi,
+        //                   chi2,
+        //                   u,
+        //                   shiftTable.get(),
+        //                   sourceCB,
+        //                   subgrid_vol_cb);
+        
+        dslashTable->startSendForward();
+        
         dslashTable->finishSendForward();
         dslashTable->finishReceiveFromBack();
         dslashTable->startSendBack();
-
-        dispatchToThreads(mvv_recons_plus,
+        
+        dslashTable->finishSendBack();
+        dslashTable->finishReceiveFromForward();
+        
+        dispatchToThreads(mvv_recons_and_recons_plus,
                           res,
                           chi1,
                           u,
@@ -96,22 +100,19 @@ void NeonDslash::apply(float* chi, float* psiArg, int isign, int cb) const
                           1-sourceCB,
                           subgrid_vol_cb);
 
-        dslashTable->finishSendBack();
-        dslashTable->finishReceiveFromForward();    
+        // dispatchToThreads(recons_plus,
+        //                   res, 
+        //                   chi2,
+        //                   u,	
+        //                   shiftTable.get(),
+        //                   1-sourceCB,
+        //                   subgrid_vol_cb);
 
-        dispatchToThreads(recons_plus,
-                          res, 
-                          chi2,
-                          u,	
-                          shiftTable.get(),
-                          1-sourceCB,
-                          subgrid_vol_cb);
-
-    } else if (isign == -1) {
+    } else {
         
         dslashTable->startReceives();
 
-        dispatchToThreads(decomp_minus,
+        dispatchToThreads(decomp_and_decomp_hvv_minus,
                           psi,
                           chi1,
                           u,
@@ -119,20 +120,24 @@ void NeonDslash::apply(float* chi, float* psiArg, int isign, int cb) const
                           sourceCB,
                           subgrid_vol_cb);
 
+        // dispatchToThreads(decomp_hvv_minus,
+        //                   psi,
+        //                   chi2,
+        //                   u,
+        //                   shiftTable.get(),
+        //                   sourceCB,
+        //                   subgrid_vol_cb);
+        
         dslashTable->startSendForward(); 
-        dispatchToThreads(decomp_hvv_minus,
-                          psi,
-                          chi2,
-                          u,
-                          shiftTable.get(),
-                          sourceCB,
-                          subgrid_vol_cb);
 
         dslashTable->finishSendForward();
         dslashTable->finishReceiveFromBack();
         dslashTable->startSendBack();
-
-        dispatchToThreads(mvv_recons_minus,
+        
+        dslashTable->finishSendBack();
+        dslashTable->finishReceiveFromForward();
+        
+        dispatchToThreads(mvv_recons_and_recons_minus,
                           res,
                           chi1,
                           u,
@@ -140,19 +145,13 @@ void NeonDslash::apply(float* chi, float* psiArg, int isign, int cb) const
                           1-sourceCB,
                           subgrid_vol_cb);
 
-        dslashTable->finishSendBack();
-        dslashTable->finishReceiveFromForward();
-
-        dispatchToThreads(recons_minus,
-                          res, 
-                          chi2,
-                          u,	
-                          shiftTable.get(),
-                          1-sourceCB,
-                          subgrid_vol_cb);
-    } else {
-        // not possible
-        throw 0;
+        // dispatchToThreads(recons_minus,
+        //                   res, 
+        //                   chi2,
+        //                   u,	
+        //                   shiftTable.get(),
+        //                   1-sourceCB,
+        //                   subgrid_vol_cb);
     }
 }
 
