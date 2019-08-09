@@ -401,6 +401,11 @@ void decomp_and_decomp_hvv_plus(int lo, int hi, int id,
     HalfSpinor* s6;
     HalfSpinor* s7;
     HalfSpinor* s8;
+
+    GaugeMat* um1;
+    GaugeMat* um2;
+    GaugeMat* um3;
+    GaugeMat* um4;
     
     Spinor* sp;
 
@@ -415,6 +420,11 @@ void decomp_and_decomp_hvv_plus(int lo, int hi, int id,
         s6 = sTab->halfspinorBufferOffset(DECOMP_HVV_SCATTER, idx, 1);
         s7 = sTab->halfspinorBufferOffset(DECOMP_HVV_SCATTER, idx, 2);
         s8 = sTab->halfspinorBufferOffset(DECOMP_HVV_SCATTER, idx, 3);
+
+        um1 = &gaugeField[curSite][0];
+        um2 = &gaugeField[curSite][1];
+        um3 = &gaugeField[curSite][2];
+        um4 = &gaugeField[curSite][3];
         
         sp = &spinorField[curSite];
 
@@ -423,10 +433,10 @@ void decomp_and_decomp_hvv_plus(int lo, int hi, int id,
         decomp_gamma2_minus(*sp, *s3);
         decomp_gamma3_minus(*sp, *s4);
 
-        decomp_hvv_gamma0_plus(*sp, *s5);
-        decomp_hvv_gamma1_plus(*sp, *s6);
-        decomp_hvv_gamma2_plus(*sp, *s7);
-        decomp_hvv_gamma3_plus(*sp, *s8);
+        decomp_hvv_gamma0_plus(*sp, *um1, *s5);
+        decomp_hvv_gamma1_plus(*sp, *um2, *s6);
+        decomp_hvv_gamma2_plus(*sp, *um3, *s7);
+        decomp_hvv_gamma3_plus(*sp, *um4, *s8);
     }
 }
 
@@ -447,6 +457,11 @@ void decomp_and_decomp_hvv_minus(int lo, int hi, int id,
     HalfSpinor* s6;
     HalfSpinor* s7;
     HalfSpinor* s8;
+
+    GaugeMat* um1;
+    GaugeMat* um2;
+    GaugeMat* um3;
+    GaugeMat* um4;
     
     Spinor* sp;
 
@@ -461,6 +476,11 @@ void decomp_and_decomp_hvv_minus(int lo, int hi, int id,
         s6 = sTab->halfspinorBufferOffset(DECOMP_HVV_SCATTER, idx, 1);
         s7 = sTab->halfspinorBufferOffset(DECOMP_HVV_SCATTER, idx, 2);
         s8 = sTab->halfspinorBufferOffset(DECOMP_HVV_SCATTER, idx, 3);
+
+        um1 = &gaugeField[curSite][0];
+        um2 = &gaugeField[curSite][1];
+        um3 = &gaugeField[curSite][2];
+        um4 = &gaugeField[curSite][3];
         
         sp = &spinorField[curSite];
 
@@ -469,10 +489,10 @@ void decomp_and_decomp_hvv_minus(int lo, int hi, int id,
         decomp_gamma2_plus(*sp, *s3);
         decomp_gamma3_plus(*sp, *s4);
 
-        decomp_hvv_gamma0_minus(*sp, *s5);
-        decomp_hvv_gamma1_minus(*sp, *s6);
-        decomp_hvv_gamma2_minus(*sp, *s7);
-        decomp_hvv_gamma3_minus(*sp, *s8);
+        decomp_hvv_gamma0_minus(*sp, *um1, *s5);
+        decomp_hvv_gamma1_minus(*sp, *um2, *s6);
+        decomp_hvv_gamma2_minus(*sp, *um3, *s7);
+        decomp_hvv_gamma3_minus(*sp, *um4, *s8);
     }
 }
 
