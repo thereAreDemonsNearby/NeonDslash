@@ -69,7 +69,7 @@ void mvv_recons_and_recons_plus(int lo, int hi, int id,
 void mvv_recons_and_recons_minus(int lo, int hi, int id,
                                  Spinor* spinorField, HalfSpinor* chi,
                                  GaugeMat (*gaugeField)[4], int cb,
-                                 ShiftTable* sTab)
+                                 ShiftTable* sTab);
 
 } // namespace Chroma
 
